@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GUI: GTK4 / Libadwaita](https://img.shields.io/badge/GUI-GTK4%20%2F%20Libadwaita-brightgreen)](https://gitlab.gnome.org/GNOME/libadwaita)
 [![Languages: En / Es / Zh](https://img.shields.io/badge/i18n-English%20%7C%20Espa%C3%B1ol%20%7C%20%E4%B8%AD%E6%96%87-blueviolet)]()
+[![Platform: Linux](https://img.shields.io/badge/Platform-Linux-orange.svg)]()
 
 [English](#english) | [Español](#español) | [简体中文](#简体中文)
 
@@ -11,6 +12,8 @@
 ## English
 
 A modern, fast, and lightweight **Linux Desktop Port & Process Monitor** built with GTK4 and Libadwaita. It helps developers and sysadmins inspect active TCP/UDP listening ports, test HTTP connectivity, and trace process causality chains.
+
+![Port Checker Screenshot](https://raw.githubusercontent.com/q514168795/portcheck-gui/main/screenshot.png) <!-- Replace with actual screenshot if available -->
 
 ### ✨ Features
 * ⚡ **Live Port Scan**: Inspect listening sockets (`ss` + `/proc`) in real time.
@@ -49,6 +52,7 @@ Un monitor moderno y ligero de **puertos y procesos para Linux** construido con 
 * 📡 **Prueba de Conectividad HTTP**: Prueba rápida de latencia y código de estado HTTP desde la interfaz.
 * 🛡️ **Capacidades de Linux**: Inspecciona procesos de `root` (como Postfix en `:25` o Docker proxy en `:5000`) sin ejecutar la interfaz con `sudo`.
 * 🌍 **Soporte Multilingüe (i18n)**: Detección automática de idioma para **Inglés**, **Español** y **Chino Simplificado**.
+* 🎨 **Diseño Nativo de GNOME**: Soporte para modo claro/oscuro siguiendo las guías de interfaz de GNOME (HIG).
 
 ### 🚀 Inicio Rápido
 ```bash
@@ -71,6 +75,7 @@ chmod +x setup_caps.sh
 * 📡 **HTTP 连通性测试**：无需打开浏览器，直接在 GUI 内测试 HTTP 状态码与握手耗时。
 * 🛡️ **Capabilities 免 Sudo 提权**：通过 Linux Capabilities 轻松窥透 root 进程（如 25 端口 Postfix、5000 端口 Docker proxy）。
 * 🌍 **多语言国际化**：自动匹配系统的 **英文**、**西班牙语** 与 **简体中文** 语言环境。
+* 🎨 **原生 GNOME 设计**：完美贴合 GNOME 桌面 HIG 设计规范，支持跟随系统切换深色/浅色主题。
 
 ### 🚀 快速使用
 ```bash
