@@ -10,6 +10,7 @@ Closing the window quits the app.
 """
 from __future__ import annotations
 
+import gettext
 import json
 import os
 import re
@@ -17,9 +18,98 @@ import shutil
 import signal
 import subprocess
 import sys
-import time
-import webbrowser
-from dataclasses import dataclass, field
+from dataclasses import field
+from dataclasses import dataclass
+from pathlib import Path
+
+# 配置多语言 (i18n / gettext) 机制
+LOCALE_DIR = Path(__file__).parent / "po"
+gettext.bindtextdomain("portcheck-gui", str(LOCALE_DIR))
+gettext.textdomain("portcheck-gui")
+
+# 翻译字典定义（支持 英语 en、简体中文 zh_CN、西班牙语 es）
+TRANSLATIONS = {
+    "en": {
+        "APP_NAME": "Port Checker",
+        "REFRESH_TOOLTIP": "Refresh (F5)",
+        "SEARCH_PLACEHOLDER": "Search by port, process name or PID...",
+        "STATUS_REFRESHED": "Refreshed ({count} listening ports)",
+        "TITLE_TEST_HTTP": "Test HTTP Connectivity (Ping)",
+        "TITLE_OPEN_BROWSER": "Open in Browser",
+        "TITLE_WITR_CAUSALITY": "Trace Process Causality (witr)",
+        "TITLE_OPEN_PROC": "Open Process Folder /proc/<pid>",
+        "TITLE_KILL_PROC": "Terminate Process (Kill)",
+        "SUBTITLE_KILL_PROC": "Send SIGTERM / SIGKILL to release port",
+        "MENU_ABOUT": "About Port Checker",
+        "ABOUT_COMMENTS": "Real-time local listening port monitor.\nPowered by ss + /proc + witr causality analysis.",
+        "KILL_CONFIRM_TITLE": "Terminate Process {name} (PID {pid})?",
+        "KILL_CONFIRM_BODY": "This will stop the process occupying port {port}. Are you sure?",
+        "BTN_CANCEL": "Cancel",
+        "BTN_TERMINATE": "Terminate",
+        "TOAST_KILL_SUCCESS": "Process {pid} terminated",
+        "TOAST_KILL_FAIL": "Failed to terminate process {pid}: {error}",
+        "WITR_DIALOG_TITLE": "Process Causality Analysis (witr)",
+        "WITR_NOT_FOUND": "witr tool is not installed in system.",
+    },
+    "es": {
+        "APP_NAME": "Comprobador de Puertos",
+        "REFRESH_TOOLTIP": "Actualizar (F5)",
+        "SEARCH_PLACEHOLDER": "Buscar por puerto, proceso o PID...",
+        "STATUS_REFRESHED": "Actualizado ({count} puertos escuchando)",
+        "TITLE_TEST_HTTP": "Probar conectividad HTTP (Ping)",
+        "TITLE_OPEN_BROWSER": "Abrir en el navegador",
+        "TITLE_WITR_CAUSALITY": "Rastrear causalidad del proceso (witr)",
+        "TITLE_OPEN_PROC": "Abrir carpeta del proceso /proc/<pid>",
+        "TITLE_KILL_PROC": "Terminar proceso (Kill)",
+        "SUBTITLE_KILL_PROC": "Enviar SIGTERM / SIGKILL para liberar el puerto",
+        "MENU_ABOUT": "Acerca del Comprobador de Puertos",
+        "ABOUT_COMMENTS": "Monitor de puertos de escucha en tiempo real.\nBasado en análisis de ss + /proc + witr.",
+        "KILL_CONFIRM_TITLE": "¿Terminar el proceso {name} (PID {pid})?",
+        "KILL_CONFIRM_BODY": "Esto detendrá el proceso que ocupa el puerto {port}. ¿Estás seguro?",
+        "BTN_CANCEL": "Cancelar",
+        "BTN_TERMINATE": "Terminar",
+        "TOAST_KILL_SUCCESS": "Proceso {pid} terminado",
+        "TOAST_KILL_FAIL": "Error al terminar el proceso {pid}: {error}",
+        "WITR_DIALOG_TITLE": "Análisis de causalidad del proceso (witr)",
+        "WITR_NOT_FOUND": "La herramienta witr no está instalada en el sistema.",
+    },
+    "zh_CN": {
+        "APP_NAME": "端口检查器",
+        "REFRESH_TOOLTIP": "刷新 (F5)",
+        "SEARCH_PLACEHOLDER": "按端口、进程名或 PID 搜索...",
+        "STATUS_REFRESHED": "已刷新 ({count} 个监听端口)",
+        "TITLE_TEST_HTTP": "测试 HTTP 连通性 (Ping)",
+        "TITLE_OPEN_BROWSER": "在浏览器中打开",
+        "TITLE_WITR_CAUSALITY": "追溯进程因果链 (witr)",
+        "TITLE_OPEN_PROC": "打开进程目录 /proc/<pid>",
+        "TITLE_KILL_PROC": "结束进程 (Kill)",
+        "SUBTITLE_KILL_PROC": "发送 SIGTERM / SIGKILL 释放端口",
+        "MENU_ABOUT": "关于 端口检查器",
+        "ABOUT_COMMENTS": "本机监听端口实时监控器。\n基于 ss + /proc + witr 因果链分析。",
+        "KILL_CONFIRM_TITLE": "确定要结束进程 {name} (PID {pid}) 吗？",
+        "KILL_CONFIRM_BODY": "这将终结正在占用端口 {port} 的进程，确定要继续吗？",
+        "BTN_CANCEL": "取消",
+        "BTN_TERMINATE": "确定结束",
+        "TOAST_KILL_SUCCESS": "进程 {pid} 已结束",
+        "TOAST_KILL_FAIL": "结束进程 {pid} 失败: {error}",
+        "WITR_DIALOG_TITLE": "进程因果链分析 (witr)",
+        "WITR_NOT_FOUND": "未在系统中找到 witr 工具。",
+    }
+}
+
+def get_sys_lang() -> str:
+    lang = os.environ.get("LANG", "en").split(".")[0]
+    if lang.startswith("zh"):
+        return "zh_CN"
+    elif lang.startswith("es"):
+        return "es"
+    return "en"
+
+CURRENT_LANG = get_sys_lang()
+
+def _(key: str) -> str:
+    """自动获取系统语言对应的国际化文本"""
+    return TRANSLATIONS.get(CURRENT_LANG, TRANSLATIONS["en"]).get(key, key)
 from pathlib import Path
 
 import gi
@@ -31,7 +121,7 @@ gi.require_version("Gdk", "4.0")
 from gi.repository import Adw, Gdk, GLib, Gio, Gtk  # noqa: E402
 
 APP_ID = "com.local.portcheck"
-APP_NAME = "端口检查器"
+APP_NAME = _("APP_NAME")
 POLL_SECONDS = 3
 STATE_PATH = Path(
     os.environ.get("PORTCHECK_GUI_STATE")
@@ -688,7 +778,7 @@ class MainWindow(Adw.ApplicationWindow):
         url_host = "127.0.0.1" if row.host in ("0.0.0.0", "::", "127.0.0.1", "::1", "") else row.host
         url = f"http://{url_host}:{row.port}/"
         ar = Adw.ActionRow()
-        ar.set_title("测试 HTTP 连通性 (Ping)")
+        ar.set_title(_("TITLE_TEST_HTTP"))
         ar.set_subtitle(url)
         ar.set_activatable(True)
         ar.connect("activated", lambda *_, u=url: self._ping_http(u))
@@ -696,24 +786,16 @@ class MainWindow(Adw.ApplicationWindow):
         actions.add(ar)
 
         ar = Adw.ActionRow()
-        ar.set_title("在浏览器中打开")
+        ar.set_title(_("TITLE_OPEN_BROWSER"))
         ar.set_subtitle(url)
         ar.set_activatable(True)
         ar.connect("activated", lambda *_, u=url: webbrowser.open(u))
-        ar.add_suffix(Gtk.Image.new_from_icon_name("go-next-symbolic"))
-        actions.add(ar)
-
-        ar = Adw.ActionRow()
-        ar.set_title("查看 ss / lsof 输出")
-        ar.set_subtitle(f"ss -tlnp sport = :{row.port}")
-        ar.set_activatable(True)
-        ar.connect("activated", lambda *_, r=row: self._show_who(r))
-        ar.add_suffix(Gtk.Image.new_from_icon_name("dialog-information-symbolic"))
+        ar.add_suffix(Gtk.Image.new_from_icon_name("external-link-symbolic"))
         actions.add(ar)
 
         if h.pid:
             ar = Adw.ActionRow()
-            ar.set_title("追溯进程因果链 (witr)")
+            ar.set_title(_("TITLE_WITR_CAUSALITY"))
             ar.set_subtitle(f"Why is this running? (witr {h.pid})")
             ar.set_activatable(True)
             ar.connect("activated", lambda *_, r=row: self._show_witr_causality(r))
@@ -721,11 +803,19 @@ class MainWindow(Adw.ApplicationWindow):
             actions.add(ar)
 
             ar = Adw.ActionRow()
-            ar.set_title("打开进程目录 /proc/<pid>")
+            ar.set_title(_("TITLE_OPEN_PROC"))
             ar.set_subtitle(f"/proc/{h.pid}")
             ar.set_activatable(True)
-            ar.connect("activated", lambda *_, p=h.pid: self._open_path(Path(f"/proc/{p}")))
-            ar.add_suffix(Gtk.Image.new_from_icon_name("folder-open-symbolic"))
+            ar.connect("activated", lambda *_, p=h.pid: self._open_proc_dir(p))
+            ar.add_suffix(Gtk.Image.new_from_icon_name("folder-symbolic"))
+            actions.add(ar)
+
+            ar = Adw.ActionRow()
+            ar.set_title(_("TITLE_KILL_PROC"))
+            ar.set_subtitle(_("SUBTITLE_KILL_PROC"))
+            ar.set_activatable(True)
+            ar.connect("activated", lambda *_, r=row: self._confirm_kill_process(r))
+            ar.add_suffix(Gtk.Image.new_from_icon_name("process-stop-symbolic"))
             actions.add(ar)
 
         self._detail_box.append(actions)
