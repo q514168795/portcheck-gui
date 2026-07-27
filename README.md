@@ -29,17 +29,17 @@ portcheck-gui/
 └── LICENSE              # MIT 开源许可证
 ```
 
+- **支持 witr 进程因果链追溯**：集成 [witr](https://github.com/pranshuparmar/witr)（由 [@pranshuparmar](https://github.com/pranshuparmar) 开源），一键深入解析进程的启动来源（Systemd 服务、父进程链、容器关联）。
+
 ---
 
-## 🚀 快速开始
+## 🛠️ 安装与运行
 
-### 1. 环境准备 (Ubuntu / Debian)
-
-安装必要的依赖：
+### 1. 克隆仓库与安装依赖
 
 ```bash
-sudo apt update
-sudo apt install python3 python3-gi libadwaita-1-0 iproute2
+git clone https://github.com/q514168795/portcheck-gui.git
+cd portcheck-gui
 ```
 
 ### 2. 权限优化 (推荐)

@@ -946,9 +946,9 @@ class PortCheckApp(Adw.Application):
             developer_name="Local",
             version="0.2.0",
             comments="本机监听端口实时监控器。\n基于 ss + /proc + witr 因果链分析。",
-            website="https://github.com/yourusername/portcheck-gui",
-            issue_url="https://github.com/yourusername/portcheck-gui/issues",
-            support_url="https://github.com/yourusername/portcheck-gui/discussions",
+            website="https://github.com/q514168795/portcheck-gui",
+            issue_url="https://github.com/q514168795/portcheck-gui/issues",
+            support_url="https://github.com/q514168795/portcheck-gui/discussions",
             license_type=Gtk.License.MIT_X11,
         )
         dlg.present()
