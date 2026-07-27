@@ -1,78 +1,95 @@
-# PortCheck GUI
+# Port Checker (portcheck-gui) 🌐
 
-一个遵循 GNOME Libadwaita 原生设计规范的 Linux 本机监听端口监控与分析工具。
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![GUI: GTK4 / Libadwaita](https://img.shields.io/badge/GUI-GTK4%20%2F%20Libadwaita-brightgreen)](https://gitlab.gnome.org/GNOME/libadwaita)
+[![Languages: En / Es / Zh](https://img.shields.io/badge/i18n-English%20%7C%20Espa%C3%B1ol%20%7C%20%E4%B8%AD%E6%96%87-blueviolet)]()
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![GTK4](https://img.shields.io/badge/GUI-GTK4%20%2F%20Libadwaita-brightgreen)
-
----
-
-## 🌟 核心特性
-
-- **⚡ 实时端口监控**：通过 Linux 内核原生 `ss` 引擎与 `/proc` 虚拟文件系统，毫秒级扫描所有 TCP 监听端口与占用进程。
-- **🌳 进程因果链分析 (Causality)**：深度集成 [witr (Why is this running?)](https://github.com/pranshuparmar/witr)，支持一键追溯进程来源（服务/容器/父 Shell/Cronjob 关系链）。
-- **📡 快捷 HTTP 连通性测试 (Ping)**：无需打开浏览器，直接在软件内测试端口响应状态码与延迟。
-- **🛡️ 免 Sudo 查看 Root 进程**：通过 Linux Capabilities 机制，安全无感查阅 25/5000 等特权端口的属主信息。
-- **🎨 现代化 GNOME 体验**：原生支持 Libadwaita 深色模式、自动响应式卡片与平滑动画。
+[English](#english) | [Español](#español) | [简体中文](#简体中文)
 
 ---
 
-## 📂 项目结构
+## English
 
-```text
-portcheck-gui/
-├── main.py              # 主程序 (GTK4/Libadwaita 应用逻辑与 UI)
-├── run.sh               # 快速启动脚本
-├── setup_caps.sh        # Linux Capabilities 自动提权配置脚本
-├── README.md            # 项目文档
-└── LICENSE              # MIT 开源许可证
-```
+A modern, fast, and lightweight **Linux Desktop Port & Process Monitor** built with GTK4 and Libadwaita. It helps developers and sysadmins inspect active TCP/UDP listening ports, test HTTP connectivity, and trace process causality chains.
 
-- **支持 witr 进程因果链追溯**：集成 [witr](https://github.com/pranshuparmar/witr)（由 [@pranshuparmar](https://github.com/pranshuparmar) 开源），一键深入解析进程的启动来源（Systemd 服务、父进程链、容器关联）。
+### ✨ Features
+* ⚡ **Live Port Scan**: Inspect listening sockets (`ss` + `/proc`) in real time.
+* 🌳 **Process Causality Tracing**: Integrated with `witr` to trace parent process trees, Systemd services, and Docker container origins.
+* 📡 **HTTP Connectivity Test**: In-app HTTP pinging with latency and status code toasts.
+* 🛡️ **Non-root Linux Capabilities**: Inspect root-owned processes (e.g., Postfix on `:25`, Docker proxy on `:5000`) without running GUI as `sudo`.
+* 🌍 **Internationalization (i18n)**: Automatic language switching for **English**, **Spanish**, and **Simplified Chinese**.
+* 🎨 **Native GNOME Design**: Dark/Light mode support following GNOME Human Interface Guidelines (HIG).
 
----
-
-## 🛠️ 安装与运行
-
-### 1. 克隆仓库与安装依赖
-
+### 🚀 Quick Start
 ```bash
 git clone https://github.com/q514168795/portcheck-gui.git
 cd portcheck-gui
-```
 
-### 2. 权限优化 (推荐)
-
-为使普通用户无感知查看 `root` 权限进程（如 Postfix/Docker）：
-
-```bash
+# Setup Linux Capabilities for non-root process inspection
 chmod +x setup_caps.sh
 ./setup_caps.sh
+
+# Run application
+./run.sh
 ```
 
-### 3. 运行程序
+### 🙏 Credits & Acknowledgments
+* **[witr](https://github.com/pranshuparmar/witr)** by [@pranshuparmar](https://github.com/pranshuparmar) (Apache-2.0 License) — Used for deep process causality tree analysis.
+* **[GNOME Libadwaita](https://gitlab.gnome.org/GNOME/libadwaita)** — Modern GTK4 widget library.
 
+---
+
+## Español
+
+Un monitor moderno y ligero de **puertos y procesos para Linux** construido con GTK4 y Libadwaita.
+
+### ✨ Características
+* ⚡ **Escaneo de Puertos en Tiempo Real**: Inspección de sockets activos (`ss` + `/proc`).
+* 🌳 **Rastreo de Causalidad de Procesos**: Integración con `witr` para rastrear árboles de procesos padres, servicios Systemd y contenedores Docker.
+* 📡 **Prueba de Conectividad HTTP**: Prueba rápida de latencia y código de estado HTTP desde la interfaz.
+* 🛡️ **Capacidades de Linux**: Inspecciona procesos de `root` (como Postfix en `:25` o Docker proxy en `:5000`) sin ejecutar la interfaz con `sudo`.
+* 🌍 **Soporte Multilingüe (i18n)**: Detección automática de idioma para **Inglés**, **Español** y **Chino Simplificado**.
+
+### 🚀 Inicio Rápido
 ```bash
+git clone https://github.com/q514168795/portcheck-gui.git
+cd portcheck-gui
+chmod +x setup_caps.sh
+./setup_caps.sh
 ./run.sh
 ```
 
 ---
 
-## 🤝 致谢与引用 (Credits & Acknowledgments)
+## 简体中文
 
-本项目在开发过程中引用和集成了以下优质开源项目：
+基于 GTK4 + Libadwaita 构建的现代化 Linux 本机端口与进程实时监控器。
 
-1. **[witr](https://github.com/pranshuparmar/witr)** (by [@pranshuparmar](https://github.com/pranshuparmar))
-   - **用途**：提供强大的底层进程因果链追溯 (Causality Tree) 分析能力。
-   - **协议**：Apache-2.0 License
+### ✨ 核心特性
+* ⚡ **实时端口扫描**：调用 `ss` 与 `/proc` 引擎秒级感知本机所有 LISTEN 监听端口。
+* 🌳 **进程因果链追溯**：无缝集成 `witr`，一键追溯父进程树、Systemd 服务名与 Docker 容器来源。
+* 📡 **HTTP 连通性测试**：无需打开浏览器，直接在 GUI 内测试 HTTP 状态码与握手耗时。
+* 🛡️ **Capabilities 免 Sudo 提权**：通过 Linux Capabilities 轻松窥透 root 进程（如 25 端口 Postfix、5000 端口 Docker proxy）。
+* 🌍 **多语言国际化**：自动匹配系统的 **英文**、**西班牙语** 与 **简体中文** 语言环境。
 
-2. **[GNOME Libadwaita](https://gitlab.gnome.org/GNOME/libadwaita)**
-   - **用途**：提供现代化 Linux 桌面 UI 控件与 HIG 设计规范。
-   - **协议**：LGPL-2.1 License
+### 🚀 快速使用
+```bash
+git clone https://github.com/q514168795/portcheck-gui.git
+cd portcheck-gui
+
+# 配置 Linux Capabilities（免 sudo 查看 root 进程）
+chmod +x setup_caps.sh
+./setup_caps.sh
+
+# 启动应用
+./run.sh
+```
+
+### 🙏 致谢与开源声明
+* **[witr](https://github.com/pranshuparmar/witr)** (作者: [@pranshuparmar](https://github.com/pranshuparmar), Apache-2.0 协议) — 用于进程因果链深度分析。
+* **[GNOME Libadwaita](https://gitlab.gnome.org/GNOME/libadwaita)** — 现代化 Linux 桌面组件库。
 
 ---
 
-## 📜 许可证 (License)
-
-本项目采用 [MIT License](LICENSE) 许可证开源。
+## 📄 License
+[MIT License](LICENSE)
